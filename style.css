@@ -56,15 +56,95 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  body { padding: 1rem 0.5rem; }
+  
   .header {
     flex-direction: column;
-    align-items: stretch !important;
+    align-items: center !important;
+    text-align: center;
     gap: 1.5rem;
+    padding: 1.5rem 1rem !important;
   }
-  .header-info h2 { font-size: 1.5rem; }
-  .summary-grid { grid-template-columns: 1fr; }
-  .controls { flex-wrap: wrap; }
-  .btn { width: 100%; justify-content: center; }
+  
+  .header-info {
+    flex-direction: column;
+    align-items: center !important;
+    gap: 1.5rem !important;
+    width: 100%;
+  }
+
+  .header-info > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    width: 100%;
+  }
+
+  .text-logo { 
+    font-size: 2.5rem !important; 
+    margin-right: 0 !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .summary-grid { 
+    grid-template-columns: 1fr; 
+    gap: 1rem;
+  }
+
+  .summary-card {
+    padding: 1.25rem !important;
+  }
+
+  .glass-card {
+    padding: 1.5rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .date-status-bar {
+    flex-direction: column;
+    gap: 0.5rem !important;
+    align-items: center !important;
+    padding: 1rem !important;
+    text-align: center;
+  }
+
+  .date-status-bar .separator { display: none; }
+
+  .controls { 
+    flex-direction: column;
+    gap: 1.5rem !important;
+    width: 100%;
+    align-items: center !important;
+  }
+
+  .input-group {
+    width: 100%;
+    justify-content: center !important;
+  }
+
+  .btn { 
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 100px;
+    justify-content: center;
+  }
+
+  #download-pdf, #download-excel {
+    min-width: 48px;
+    flex: 0;
+  }
+
+  .table-container {
+    margin: 0;
+    border-radius: 0.75rem;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+  }
 }
 
 /* Glass Card */
@@ -143,7 +223,7 @@ body {
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   margin-bottom: 2.5rem;
 }
 
