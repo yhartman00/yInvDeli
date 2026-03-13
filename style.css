@@ -1,5 +1,6 @@
 :root {
   --primary: #FFCE44; /* Pineapple Yellow */
+  --primary-rgb: 255, 206, 68;
   --primary-hover: #F9A825;
   --secondary: #82C4E3; /* Sky Blue */
   --bg: #0B243B; /* Dark Tropical Blue */
@@ -25,18 +26,33 @@ body {
   color: var(--text);
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(130, 196, 227, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(255, 206, 68, 0.1) 0%, transparent 40%);
   overflow-x: hidden;
+  padding: 1rem;
 }
 
 #app {
   width: 100%;
-  max-width: 1200px;
-  padding: 2rem;
+  max-width: 100%;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1.5rem;
+  }
+  .header-info h2 { font-size: 1.5rem; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .controls { flex-wrap: wrap; }
+  .btn { width: 100%; justify-content: center; }
 }
 
 /* Glass Card */
@@ -49,6 +65,7 @@ body {
   padding: 2.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
 }
 
 /* Login Screen */
@@ -103,6 +120,7 @@ body {
 .dashboard {
   display: none; /* Shown after login */
   animation: fadeIn 0.5s ease-out;
+  width: 100%;
 }
 
 @keyframes fadeIn {
@@ -236,6 +254,19 @@ tr:hover td {
 .profit-positive { color: var(--success); }
 .profit-negative { color: var(--danger); }
 
+tr.subtotal-row td {
+  background: rgba(var(--primary-rgb), 0.1);
+  font-weight: bold;
+  border-top: 2px solid var(--border);
+  color: var(--primary);
+}
+
+.group-header {
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 700;
+  color: var(--secondary);
+}
+
 /* Upload Area */
 .upload-area {
   border: 2px dashed var(--border);
@@ -254,9 +285,10 @@ tr:hover td {
 /* Summary Cards */
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .summary-card {
@@ -264,6 +296,9 @@ tr:hover td {
   padding: 1.5rem;
   border-radius: 1rem;
   border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .summary-card h3 {

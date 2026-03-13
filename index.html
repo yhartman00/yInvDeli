@@ -30,6 +30,7 @@
         <div class="header-info">
           <h2>Gestión de Inventario</h2>
           <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
+            <input type="text" id="search-input" class="styled-input" placeholder="Buscar producto o código..." style="width: auto; min-width: 200px;">
             <select id="date-selector" class="styled-input" style="width: auto; min-width: 150px;">
               <option value="">Cargando fechas...</option>
             </select>
@@ -39,6 +40,12 @@
             </button>
             <button id="change-pin-btn" class="btn btn-outline" style="padding: 0.5rem 1rem;">
               PIN
+            </button>
+            <button id="escuelita-nav-btn" class="btn btn-outline" style="padding: 0.5rem 1rem; border-color: var(--secondary);">
+              Escuelita
+            </button>
+            <button id="help-btn" class="btn btn-outline" style="padding: 0.5rem; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border-color: var(--secondary); color: var(--secondary);">
+              ?
             </button>
             <button id="logout-btn" class="btn btn-outline" style="padding: 0.5rem 1rem; color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">
               Salir
@@ -65,7 +72,7 @@
 
       <div class="summary-grid">
         <div class="summary-card">
-          <h3>Total Vales Venta</h3>
+          <h3>Venta Total</h3>
           <div class="value" id="total-sales">$0.00</div>
         </div>
         <div class="summary-card">
@@ -99,8 +106,10 @@
                 <th>Producto</th>
                 <th class="numeric">Stock</th>
                 <th class="numeric">Costo Unit.</th>
+                <th class="numeric">Costo Total</th>
                 <th class="numeric">P. Venta</th>
                 <th class="numeric">Venta Total</th>
+                <th class="numeric">Impuesto (11%)</th>
                 <th class="numeric">Ganancia</th>
               </tr>
             </thead>
@@ -113,7 +122,58 @@
     </div>
   </div>
 
-  <!-- Change PIN Modal -->
+    <!-- Escuelita View (Hidden by default) -->
+    <div id="escuelita-view" class="dashboard" style="display: none; padding: 2rem;">
+      <div class="header glass-card" style="margin-bottom: 2rem; padding: 1.5rem 2.5rem;">
+        <div class="header-info">
+          <h2 style="color: var(--secondary);">Archivo Histórico (Escuelita)</h2>
+          <p>Consulta y exporta capturas guardadas anteriormente</p>
+        </div>
+        <div class="controls">
+          <button id="back-to-dashboard" class="btn btn-primary" style="background: var(--bg); border: 1px solid var(--primary); color: var(--primary);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><polyline points="15 18 9 12 15 6"/></svg>
+            Volver
+          </button>
+        </div>
+      </div>
+
+      <div id="escuelita-list" class="summary-grid">
+        <!-- Saved groups will be injected here as cards -->
+      </div>
+
+      <div id="escuelita-detail" class="glass-card" style="display: none; padding: 2rem; margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+          <h3 id="escuelita-detail-title" style="color: var(--secondary);">Detalle de Grupo</h3>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="escuelita-pdf" class="btn btn-primary">PDF</button>
+            <button id="escuelita-excel" class="btn btn-primary" style="background: linear-gradient(135deg, #2E7D32, #1B5E20);">Excel</button>
+            <button id="escuelita-delete" class="btn btn-outline" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.2);">Borrar</button>
+          </div>
+        </div>
+        <div id="escuelita-detail-summary" class="summary-grid" style="margin-bottom: 2rem;">
+          <!-- Detail totals will be injected here -->
+        </div>
+        <div class="table-container">
+          <table id="escuelita-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="numeric">Stock</th>
+                <th class="numeric">Costo Unit.</th>
+                <th class="numeric">Costo Total</th>
+                <th class="numeric">P. Venta</th>
+                <th class="numeric">Venta Total</th>
+                <th class="numeric">Impuesto (11%)</th>
+                <th class="numeric">Ganancia</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change PIN Modal -->
   <div id="pin-modal" class="dashboard" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
     <div class="glass-card" style="max-width: 400px; width: 90%;">
       <h3>Cambiar PIN</h3>
@@ -128,6 +188,53 @@
       <div style="display: flex; gap: 1rem; margin-top: 2rem;">
         <button id="save-pin-btn" class="btn btn-primary" style="flex: 1;">Guardar</button>
         <button id="cancel-pin-btn" class="btn btn-outline" style="flex: 1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="help-modal" class="dashboard" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1100; justify-content: center; align-items: center; display: none;">
+    <div class="glass-card" style="max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="color: var(--secondary); margin: 0;">Guía de Ayuda 📖</h2>
+        <button id="close-help-btn" class="btn btn-outline" style="padding: 0.2rem 0.6rem;">&times;</button>
+      </div>
+      
+      <div style="line-height: 1.6; color: var(--text);">
+        <section style="margin-bottom: 2rem;">
+          <h3 style="color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">1. Carga de Datos 📂</h3>
+          <p>Usa el botón <strong>"Carga"</strong> para subir archivos Excel (.xlsx). El sistema reconoce automáticamente:</p>
+          <ul style="padding-left: 1.5rem;">
+            <li>Columna 1: Código de producto</li>
+            <li>Columna 2: Descripción</li>
+            <li>Columna 5: Stock / Cantidad</li>
+            <li>Columna 7: Importe (Costo Total)</li>
+          </ul>
+        </section>
+
+        <section style="margin-bottom: 2rem;">
+          <h3 style="color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">2. Cálculos y Margen 📊</h3>
+          <ul style="list-style: none; padding: 0;">
+            <li><strong>Venta Total:</strong> Costo + Margen aplicado (defecto 14%).</li>
+            <li><strong>Impuestos:</strong> 11% sobre la Venta Total.</li>
+            <li><strong>Ganancia Neta:</strong> Venta Total - Costo - Impuestos.</li>
+          </ul>
+          <p><small><i>* Puedes cambiar el margen en tiempo real desde el panel superior.</i></small></p>
+        </section>
+
+        <section style="margin-bottom: 2rem;">
+          <h3 style="color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">3. Escuelita (Historial) 🏫</h3>
+          <p>Guarda grupos específicos (facturas) haciendo clic en <strong>"💾 Guardar"</strong> en la fila de subtotal. Luego puedes consultarlos, borrarlos o exportarlos desde la sección "Escuelita".</p>
+        </section>
+
+        <section style="margin-bottom: 1rem;">
+          <h3 style="color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">4. Exportación 📄</h3>
+          <p>Genera reportes profesionales en <strong>PDF</strong> para imprimir o archivos <strong>Excel</strong> para auditorías detalladas.</p>
+        </section>
+      </div>
+
+      <div style="margin-top: 2rem; text-align: center;">
+        <button id="close-help-ok-btn" class="btn btn-primary" style="width: 100%;">Entendido</button>
       </div>
     </div>
   </div>

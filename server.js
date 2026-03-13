@@ -3,6 +3,7 @@ import cors from 'cors';
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,8 +20,19 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // Database Initialization
-const db = new Database('inventory.db');
+const dbPath = process.env.DATABASE_PATH || path.join(__dirname, 'inventory.db');
+
+// Ensure directory exists
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const db = new Database(dbPath);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS inventory (
@@ -34,6 +46,14 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS settings (
     key TEXT PRIMARY KEY,
     value TEXT
+  );
+  CREATE TABLE IF NOT EXISTS escuelita (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prefix TEXT,
+    save_date TEXT,
+    original_date TEXT,
+    margin REAL,
+    items_json TEXT
   );
 `);
 
@@ -122,6 +142,36 @@ app.post('/api/inventory', (req, res) => {
     const count = db.prepare('SELECT COUNT(*) as count FROM inventory WHERE date = ?').get(date);
     console.log(`Confirmado: ${count.count} items en la DB para ${date}`);
     res.json({ success: true, message: `Saved ${items.length} items for ${date}` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Escuelita (History) ---
+app.post('/api/escuelita', (req, res) => {
+  const { prefix, saveDate, originalDate, margin, items } = req.body;
+  try {
+    const stmt = db.prepare('INSERT INTO escuelita (prefix, save_date, original_date, margin, items_json) VALUES (?, ?, ?, ?, ?)');
+    stmt.run(prefix, saveDate, originalDate, margin, JSON.stringify(items));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/escuelita', (req, res) => {
+  try {
+    const rows = db.prepare('SELECT * FROM escuelita ORDER BY id DESC').all();
+    res.json(rows.map(r => ({ ...r, items: JSON.parse(r.items_json) })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/escuelita/:id', (req, res) => {
+  try {
+    db.prepare('DELETE FROM escuelita WHERE id = ?').run(req.params.id);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
