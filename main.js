@@ -180,6 +180,15 @@ async function loadDates() {
   try {
     availableDates = await apiFetch('/dates');
     if (availableDates.length > 0) {
+      // Sort dates to ensure we have the latest one (availableDates is usually YYYY-MM-DD)
+      const sortedDates = [...availableDates].sort().reverse();
+      const latestDate = sortedDates[0];
+      const parts = latestDate.split('-');
+      const latestFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      
+      const lastUpdateEl = document.getElementById('last-update-text');
+      if (lastUpdateEl) lastUpdateEl.textContent = `Última actualización: ${latestFormatted}`;
+      
       await loadDataForDate(availableDates[0]);
     } else {
       showUploadArea();
@@ -261,6 +270,13 @@ async function loadDataForDate(date) {
     // YYYY-MM-DD -> DD/MM/YYYY para el título y PDF
     const parts = date.split('-');
     lastUpdateDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : date;
+    
+    const viewingDateEl = document.getElementById('viewing-date-text');
+    if (viewingDateEl) viewingDateEl.textContent = `Estas viendo: ${lastUpdateDate}`;
+    
+    const statusBar = document.getElementById('date-status-bar');
+    if (statusBar) statusBar.style.display = 'flex';
+    
     updateDashboard();
     showTable();
   } catch (err) {
@@ -274,6 +290,8 @@ function showUploadArea() {
   tableSection.style.display = 'none';
   if (summaryGrid) summaryGrid.style.display = 'none';
   if (importDateGroup) importDateGroup.style.display = 'flex';
+  const statusBar = document.getElementById('date-status-bar');
+  if (statusBar) statusBar.style.display = 'none';
   downloadBtn.disabled = true;
   downloadExcelBtn.disabled = true;
 }
