@@ -1,15 +1,16 @@
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --secondary: #ec4899;
-  --bg: #0f172a;
-  --card-bg: rgba(30, 41, 59, 0.7);
+  --primary: #FFCE44; /* Pineapple Yellow */
+  --primary-hover: #F9A825;
+  --secondary: #82C4E3; /* Sky Blue */
+  --bg: #0B243B; /* Dark Tropical Blue */
+  --card-bg: rgba(15, 48, 87, 0.8);
   --glass: rgba(255, 255, 255, 0.05);
-  --border: rgba(255, 255, 255, 0.1);
-  --text: #f8fafc;
-  --text-muted: #94a3b8;
-  --success: #10b981;
-  --danger: #ef4444;
+  --border: rgba(130, 196, 227, 0.2); /* Soft blue border */
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+  --success: #799D3C; /* Palm Green */
+  --danger: #E54134; /* Hibiscus Red */
+  --surface: #DFB77C; /* Sandy Beige */
 }
 
 * {
@@ -27,8 +28,8 @@ body {
   justify-content: center;
   align-items: center;
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(130, 196, 227, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 206, 68, 0.1) 0%, transparent 40%);
   overflow-x: hidden;
 }
 
@@ -60,8 +61,9 @@ body {
 .login-container h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(to right, #818cf8, #f472b6);
+  background: linear-gradient(to right, var(--primary), var(--secondary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

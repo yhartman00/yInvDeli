@@ -31,7 +31,7 @@ export function exportToPDF(data, summary, margin, date) {
 
   // Products Table
   const tableRows = data.map(p => [
-    p.name,
+    p.description || p.name,
     p.stock.toLocaleString(),
     p.unitCost.toLocaleString(undefined, { minimumFractionDigits: 2 }),
     p.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2 }),
