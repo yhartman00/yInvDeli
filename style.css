@@ -4,7 +4,7 @@
   --primary-hover: #F9A825;
   --secondary: #82C4E3; /* Sky Blue */
   --bg: #0B243B; /* Dark Tropical Blue */
-  --card-bg: rgba(15, 48, 87, 0.8);
+  --card-bg: rgba(15, 48, 87, 0.4);
   --glass: rgba(255, 255, 255, 0.05);
   --border: rgba(130, 196, 227, 0.2); /* Soft blue border */
   --text: #F8FAFC;
@@ -13,6 +13,17 @@
   --danger: #E54134; /* Hibiscus Red */
   --surface: #DFB77C; /* Sandy Beige */
 }
+
+/* Text Logo Styles */
+.text-logo {
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  display: inline-block;
+  user-select: none;
+}
+.text-logo .y { color: var(--primary); }
+.text-logo .inv { color: var(--text); }
+.text-logo .deli { color: var(--primary); }
 
 * {
   margin: 0;

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>yInvDeli - Calculadora de Ganancias</title>
+  <link rel="icon" type="image/png" href="./favicon_.png">
   <link rel="stylesheet" href="./style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +17,10 @@
 <body>
   <div id="app">
     <!-- Login Screen -->
-    <div id="login-screen" class="login-container glass-card">
-      <h1>yInvDeli</h1>
+    <div id="login-screen" class="login-container glass-card" style="text-align: center;">
+      <div class="text-logo" style="font-size: 4rem; margin-bottom: 2rem; filter: drop-shadow(0 0 12px rgba(255, 206, 68, 0.4));">
+        <span class="y">y</span><span class="inv">Inv</span><span class="deli">Deli</span>
+      </div>
       <p>Introduce tu PIN para acceder</p>
       <div class="pin-inputs" id="pin-container">
         <input type="password" maxlength="1" inputmode="numeric">
@@ -31,8 +34,10 @@
     <!-- Dashboard -->
     <div id="dashboard" class="dashboard">
       <div class="header glass-card" style="margin-bottom: 2rem; padding: 1.5rem 2.5rem;">
-        <div class="header-info">
-          <h2>Gestión de Inventario</h2>
+        <div class="header-info" style="display: flex; align-items: center; gap: 1.5rem;">
+          <div class="text-logo" style="font-size: 2rem; margin-right: 0.5rem;">
+            <span class="y">y</span><span class="inv">Inv</span><span class="deli">Deli</span>
+          </div>
           <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
             <input type="text" id="search-input" class="styled-input" placeholder="Buscar producto o código..." style="width: auto; min-width: 200px;">
             <button id="history-btn" class="btn btn-outline" style="padding: 0.5rem 1rem; border-color: var(--secondary); color: var(--secondary);">
