@@ -33,6 +33,7 @@ if (!fs.existsSync(dbDir)) {
 }
 
 const db = new Database(dbPath);
+console.log(`[DB DEBUG] Using database at: ${path.resolve(dbPath)}`);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS inventory (

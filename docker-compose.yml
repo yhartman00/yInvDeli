@@ -4,7 +4,10 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./data:/app/data
+      - yinvdeli_data:/app/data
     environment:
       - DATABASE_PATH=/app/data/inventory.db
     restart: always
+
+volumes:
+  yinvdeli_data:

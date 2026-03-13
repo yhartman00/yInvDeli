@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import { exportToPDF } from './pdf-export.js';
 
 const PIN_CORRECTO = '1234'; // Default, but we'll use backend
-const API_BASE = '/api';
+const API_BASE = window.location.port === '5173' ? 'http://localhost:3001/api' : '/api';
 let currentData = [];
 let lastUpdateDate = '';
 
@@ -93,27 +93,7 @@ savePinBtn.addEventListener('click', async () => {
       body: JSON.stringify({ oldPin, newPin })
     });
     
-// Help Modal Logic
-const helpModal = document.getElementById('help-modal');
-const helpBtn = document.getElementById('help-btn');
-const closeHelpBtn = document.getElementById('close-help-btn');
-const closeHelpOkBtn = document.getElementById('close-help-ok-btn');
-
-if (helpBtn) {
-  helpBtn.addEventListener('click', () => {
-    helpModal.style.display = 'flex';
-  });
-}
-
-[closeHelpBtn, closeHelpOkBtn].forEach(btn => {
-  if (btn) {
-    btn.addEventListener('click', () => {
-      helpModal.style.display = 'none';
-    });
-  }
-});
-
-alert('PIN actualizado correctamente');
+    alert('PIN actualizado correctamente');
     pinModal.style.display = 'none';
     document.getElementById('old-pin').value = '';
     document.getElementById('new-pin').value = '';
@@ -138,6 +118,21 @@ const escuelitaView = document.getElementById('escuelita-view');
 const backToDashboardBtn = document.getElementById('back-to-dashboard');
 const escuelitaList = document.getElementById('escuelita-list');
 const escuelitaDetail = document.getElementById('escuelita-detail');
+
+// --- Help Modal Logic ---
+const helpModal = document.getElementById('help-modal');
+const helpBtn = document.getElementById('help-btn');
+const closeHelpBtn = document.getElementById('close-help-btn');
+const closeHelpOkBtn = document.getElementById('close-help-ok-btn');
+
+if (helpBtn) {
+  helpBtn.addEventListener('click', () => {
+    helpModal.style.display = 'flex';
+  });
+}
+
+if (closeHelpBtn) closeHelpBtn.onclick = () => helpModal.style.display = 'none';
+if (closeHelpOkBtn) closeHelpOkBtn.onclick = () => helpModal.style.display = 'none';
 
 async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
