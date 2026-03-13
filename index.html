@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>yInvDeli - Calculadora de Ganancias</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container glass-card">
+      <h1>yInvDeli</h1>
+      <p>Introduce tu PIN para acceder</p>
+      <div class="pin-inputs" id="pin-container">
+        <input type="password" maxlength="1" inputmode="numeric">
+        <input type="password" maxlength="1" inputmode="numeric">
+        <input type="password" maxlength="1" inputmode="numeric">
+        <input type="password" maxlength="1" inputmode="numeric">
+      </div>
+      <div id="login-error" style="color: var(--danger); margin-top: 1rem; display: none;">PIN incorrecto</div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+      <div class="header glass-card" style="margin-bottom: 2rem; padding: 1.5rem 2.5rem;">
+        <div class="header-info">
+          <h2>Proyección de Ventas</h2>
+          <p id="update-date">Carga un archivo para comenzar</p>
+        </div>
+        <div class="controls">
+          <div class="input-group" style="margin-bottom: 0;">
+            <label>% Margen de Venta</label>
+            <input type="number" id="margin-input" class="styled-input" style="width: 100px;" value="20" min="0">
+          </div>
+          <button id="download-pdf" class="btn btn-primary" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <h3>Total Vales Venta</h3>
+          <div class="value" id="total-sales">$0.00</div>
+        </div>
+        <div class="summary-card">
+          <h3>Costo Total</h3>
+          <div class="value" id="total-cost">$0.00</div>
+        </div>
+        <div class="summary-card">
+          <h3>Impuestos (11%)</h3>
+          <div class="value" id="total-tax">$0.00</div>
+        </div>
+        <div class="summary-card">
+          <h3>Ganancia Neta</h3>
+          <div class="value" id="total-profit" style="color: var(--success);">$0.00</div>
+        </div>
+      </div>
+
+      <div class="glass-card" style="padding: 0;">
+        <div id="upload-section" class="upload-area">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" style="margin-bottom: 1rem;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+          </svg>
+          <h3>Arrastra tu archivo CSV aquí</h3>
+          <p>O haz clic para buscar en tu equipo</p>
+          <input type="file" id="file-input" hidden accept=".csv">
+        </div>
+
+        <div id="table-section" class="table-container" style="display: none;">
+          <table id="products-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="numeric">Stock</th>
+                <th class="numeric">Costo Unit.</th>
+                <th class="numeric">P. Venta</th>
+                <th class="numeric">Venta Total</th>
+                <th class="numeric">Ganancia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data injected here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
