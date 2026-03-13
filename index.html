@@ -34,6 +34,10 @@
             <select id="date-selector" class="styled-input" style="width: auto; min-width: 150px;">
               <option value="">Cargando fechas...</option>
             </select>
+            <div id="import-date-group" style="display: none; align-items: center; gap: 0.5rem; background: var(--glass); padding: 0.25rem 0.75rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+              <label for="import-date" style="font-size: 0.75rem; color: var(--secondary); font-weight: 600;">Fecha Carga:</label>
+              <input type="date" id="import-date" class="styled-input" style="width: auto; padding: 0.2rem; border: none; background: transparent; font-size: 0.85rem;">
+            </div>
             <button id="new-upload-btn" class="btn btn-outline" style="padding: 0.5rem 1rem;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
               Carga
@@ -70,7 +74,7 @@
         </div>
       </div>
 
-      <div class="summary-grid">
+      <div id="summary-grid" class="summary-grid">
         <div class="summary-card">
           <h3>Venta Total</h3>
           <div class="value" id="total-sales">$0.00</div>
@@ -89,15 +93,19 @@
         </div>
       </div>
 
-      <div class="glass-card" style="padding: 0;">
-        <div id="upload-section" class="upload-area">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" style="margin-bottom: 1rem;">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-          </svg>
-          <h3>Arrastra tu archivo Excel (.xlsx) aquí</h3>
-          <p>O haz clic para buscar en tu equipo</p>
+      <div id="upload-section" class="glass-card" style="padding: 4rem 2rem; text-align: center; margin-bottom: 2rem; display: none;">
+        <div class="upload-area" style="border: 2px dashed var(--border); border-radius: 1.5rem; padding: 3rem;">
+          <div class="upload-icon-container">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+            </svg>
+          </div>
+          <h3 style="font-size: 1.5rem; margin-top: 1.5rem; margin-bottom: 0.5rem;">Selecciona tu archivo de Inventario</h3>
+          <p style="color: var(--text-muted); margin-bottom: 2rem;">Haz clic aquí para buscar en tu equipo (.xlsx, .xls, .csv)</p>
           <input type="file" id="file-input" hidden accept=".csv, .xlsx, .xls">
+          <button class="btn btn-primary" style="pointer-events: none;">Explorar Archivos</button>
         </div>
+      </div>
 
         <div id="table-section" class="table-container" style="display: none;">
           <table id="products-table">

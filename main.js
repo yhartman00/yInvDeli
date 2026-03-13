@@ -108,6 +108,7 @@ const uploadSection = document.getElementById('upload-section');
 const tableSection = document.getElementById('table-section');
 const productsTableBody = document.querySelector('#products-table tbody');
 const marginInput = document.getElementById('margin-input');
+const summaryGrid = document.getElementById('summary-grid');
 const searchInput = document.getElementById('search-input');
 const dateSelector = document.getElementById('date-selector');
 const downloadBtn = document.getElementById('download-pdf');
@@ -118,6 +119,13 @@ const escuelitaView = document.getElementById('escuelita-view');
 const backToDashboardBtn = document.getElementById('back-to-dashboard');
 const escuelitaList = document.getElementById('escuelita-list');
 const escuelitaDetail = document.getElementById('escuelita-detail');
+const importDateInput = document.getElementById('import-date');
+const importDateGroup = document.getElementById('import-date-group');
+
+// Set default date for import to today
+if (importDateInput) {
+  importDateInput.value = new Date().toISOString().split('T')[0];
+}
 
 // --- Help Modal Logic ---
 const helpModal = document.getElementById('help-modal');
@@ -200,6 +208,8 @@ async function loadDataForDate(date) {
 function showUploadArea() {
   uploadSection.style.display = 'block';
   tableSection.style.display = 'none';
+  if (summaryGrid) summaryGrid.style.display = 'none';
+  if (importDateGroup) importDateGroup.style.display = 'flex';
   downloadBtn.disabled = true;
   downloadExcelBtn.disabled = true;
 }
@@ -207,6 +217,8 @@ function showUploadArea() {
 function showTable() {
   uploadSection.style.display = 'none';
   tableSection.style.display = 'block';
+  if (summaryGrid) summaryGrid.style.display = 'grid';
+  if (importDateGroup) importDateGroup.style.display = 'none';
   downloadBtn.disabled = false;
   downloadExcelBtn.disabled = false;
 }
@@ -251,7 +263,7 @@ async function handleFile(file) {
 
 async function processRows(rows) {
   try {
-    const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const date = importDateInput.value || new Date().toISOString().split('T')[0];
 
     console.log('Procesando filas:', rows.length);
 

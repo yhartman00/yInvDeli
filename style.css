@@ -177,6 +177,11 @@ body {
   border-color: var(--primary);
 }
 
+select.styled-input option {
+  background-color: #0F3057; /* Matches --card-bg without transparency */
+  color: var(--text);
+}
+
 /* Button Styles */
 .btn {
   padding: 0.75rem 1.5rem;
@@ -279,7 +284,15 @@ tr.subtotal-row td {
 
 .upload-area:hover, .upload-area.active {
   border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(var(--primary-rgb), 0.05);
+}
+
+.upload-icon-container {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.upload-area:hover .upload-icon-container {
+  transform: translateY(-8px) scale(1.1);
 }
 
 /* Summary Cards */

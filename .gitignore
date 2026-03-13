@@ -1,0 +1,14 @@
+node_modules
+dist
+.env
+inventory.db
+data/
+*.log
+.gemini/
+.agent/
+.agents/
+brain/
+tmp/
+*.xlsx
+*.csv
+.DS_Store
