@@ -180,15 +180,19 @@ async function loadDates() {
   try {
     availableDates = await apiFetch('/dates');
     if (availableDates.length > 0) {
-      // Sort dates to ensure we have the latest one (availableDates is usually YYYY-MM-DD)
+      // Sort dates to show the most recent one as the 'Latest Update'
+      // availableDates format: YYYY-MM-DD
       const sortedDates = [...availableDates].sort().reverse();
       const latestDate = sortedDates[0];
+      
+      // Convert YYYY-MM-DD to DD/MM/YYYY for display
       const parts = latestDate.split('-');
       const latestFormatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
       
       const lastUpdateEl = document.getElementById('last-update-text');
       if (lastUpdateEl) lastUpdateEl.textContent = `Última actualización: ${latestFormatted}`;
       
+      // Load the most recent date by default
       await loadDataForDate(availableDates[0]);
     } else {
       showUploadArea();
@@ -267,13 +271,15 @@ async function loadDataForDate(date) {
       unitCost: p.cost,
       code: p.code
     }));
-    // YYYY-MM-DD -> DD/MM/YYYY para el título y PDF
+    // Format date for title and PDF (DD/MM/YYYY)
     const parts = date.split('-');
     lastUpdateDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : date;
     
+    // Update the 'Viewing' status text
     const viewingDateEl = document.getElementById('viewing-date-text');
     if (viewingDateEl) viewingDateEl.textContent = `Estas viendo: ${lastUpdateDate}`;
     
+    // Show the status bar container
     const statusBar = document.getElementById('date-status-bar');
     if (statusBar) statusBar.style.display = 'flex';
     

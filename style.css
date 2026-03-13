@@ -14,13 +14,14 @@
   --surface: #DFB77C; /* Sandy Beige */
 }
 
-/* Text Logo Styles */
+/* Text Logo Styles: Custom branded logo using fonts and colors */
 .text-logo {
   font-weight: 800;
   letter-spacing: -0.05em;
   display: inline-block;
-  user-select: none;
+  user-select: none; /* Prevents text selection for a more UI-like feel */
 }
+/* Brand colors: y=Yellow, Inv=White, Deli=Yellow */
 .text-logo .y { color: var(--primary); }
 .text-logo .inv { color: var(--text); }
 .text-logo .deli { color: var(--primary); }
