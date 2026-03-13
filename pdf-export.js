@@ -1,8 +1,6 @@
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-
-export function exportToPDF(data, summary, margin, date, title = 'yInvDeli - Proyección de Ventas') {
-  const doc = jsPDF();
+function exportToPDF(data, summary, margin, date, title = 'yInvDeli - Proyección de Ventas') {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
   
   // Header
   doc.setFontSize(22);

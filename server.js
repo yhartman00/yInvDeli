@@ -20,7 +20,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the 'dist' directory
+// Serve static files from the root and 'dist' directory
+app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Database Initialization

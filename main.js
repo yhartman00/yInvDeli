@@ -1,11 +1,10 @@
-import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
-import { exportToPDF } from './pdf-export.js';
-
 const PIN_CORRECTO = '1234'; // Default, but we'll use backend
 const API_BASE = window.location.port === '5173' ? 'http://localhost:3001/api' : '/api';
 let currentData = [];
 let lastUpdateDate = '';
+
+// Use globals provided by CDN
+// Papa, XLSX are now available globally
 
 // --- Login Logic ---
 const pinInputs = document.querySelectorAll('#pin-container input');
@@ -110,7 +109,13 @@ const productsTableBody = document.querySelector('#products-table tbody');
 const marginInput = document.getElementById('margin-input');
 const summaryGrid = document.getElementById('summary-grid');
 const searchInput = document.getElementById('search-input');
-const dateSelector = document.getElementById('date-selector');
+const historyBtn = document.getElementById('history-btn');
+const calendarModal = document.getElementById('calendar-modal');
+const closeCalendarBtn = document.getElementById('close-calendar');
+const prevMonthBtn = document.getElementById('prev-month');
+const nextMonthBtn = document.getElementById('next-month');
+const monthYearDisplay = document.getElementById('calendar-month-year');
+const calendarDaysContainer = document.getElementById('calendar-days-container');
 const downloadBtn = document.getElementById('download-pdf');
 const downloadExcelBtn = document.getElementById('download-excel');
 const newUploadBtn = document.getElementById('new-upload-btn');
@@ -121,6 +126,9 @@ const escuelitaList = document.getElementById('escuelita-list');
 const escuelitaDetail = document.getElementById('escuelita-detail');
 const importDateInput = document.getElementById('import-date');
 const importDateGroup = document.getElementById('import-date-group');
+
+let currentCalendarDate = new Date();
+let availableDates = [];
 
 // Set default date for import to today
 if (importDateInput) {
@@ -133,14 +141,15 @@ const helpBtn = document.getElementById('help-btn');
 const closeHelpBtn = document.getElementById('close-help-btn');
 const closeHelpOkBtn = document.getElementById('close-help-ok-btn');
 
-if (helpBtn) {
-  helpBtn.addEventListener('click', () => {
-    helpModal.style.display = 'flex';
-  });
-}
-
+if (helpBtn) helpBtn.onclick = () => helpModal.style.display = 'flex';
 if (closeHelpBtn) closeHelpBtn.onclick = () => helpModal.style.display = 'none';
 if (closeHelpOkBtn) closeHelpOkBtn.onclick = () => helpModal.style.display = 'none';
+
+// Close modals when clicking outside
+window.onclick = (event) => {
+  if (event.target === helpModal) helpModal.style.display = 'none';
+  if (event.target === calendarModal) calendarModal.style.display = 'none';
+};
 
 async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
@@ -169,21 +178,75 @@ async function apiFetch(endpoint, options = {}) {
 
 async function loadDates() {
   try {
-    const dates = await apiFetch('/dates');
-    dateSelector.innerHTML = dates.map(d => {
-      // YYYY-MM-DD -> DD/MM/YYYY para mostrar al usuario
-      const parts = d.split('-');
-      const displayDate = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : d;
-      return `<option value="${d}">${displayDate}</option>`;
-    }).join('') || '<option value="">No hay datos</option>';
-    if (dates.length > 0) {
-      await loadDataForDate(dates[0]);
+    availableDates = await apiFetch('/dates');
+    if (availableDates.length > 0) {
+      await loadDataForDate(availableDates[0]);
     } else {
       showUploadArea();
     }
   } catch (err) {
     console.error('Error cargando fechas:', err);
   }
+}
+
+function renderCalendar(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+  
+  calendarDaysContainer.innerHTML = '';
+  
+  // Empty slots for days before the 1st
+  for (let i = 0; i < firstDay; i++) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'calendar-day empty';
+    calendarDaysContainer.appendChild(emptyDiv);
+  }
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'calendar-day';
+    dayDiv.textContent = day;
+    
+    if (availableDates.includes(dateStr)) {
+      dayDiv.classList.add('has-data');
+    }
+    
+    // Check if this date is currently selected (lastUpdateDate is DD/MM/YYYY)
+    if (lastUpdateDate && lastUpdateDate.includes('/')) {
+      const [d, m, y] = lastUpdateDate.split('/');
+      if (y === String(year) && m === String(month + 1).padStart(2, '0') && d === String(day).padStart(2, '0')) {
+        dayDiv.classList.add('selected');
+      }
+    }
+    
+    dayDiv.addEventListener('click', () => {
+      loadDataForDate(dateStr);
+      calendarModal.style.display = 'none';
+    });
+    
+    calendarDaysContainer.appendChild(dayDiv);
+  }
+}
+
+function openCalendar() {
+  calendarModal.style.display = 'flex';
+  renderCalendar(currentCalendarDate);
+}
+
+function closeCalendar() {
+  calendarModal.style.display = 'none';
+}
+
+function changeMonth(offset) {
+  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset);
+  renderCalendar(currentCalendarDate);
 }
 
 async function loadDataForDate(date) {
@@ -202,6 +265,7 @@ async function loadDataForDate(date) {
     showTable();
   } catch (err) {
     console.error(`Error cargando datos para ${date}:`, err);
+    alert('No se pudieron cargar los datos de esta fecha. Revisa la conexión con el servidor.');
   }
 }
 
@@ -226,50 +290,79 @@ function showTable() {
 newUploadBtn.addEventListener('click', showUploadArea);
 
 searchInput.addEventListener('input', updateDashboard);
-dateSelector.addEventListener('change', (e) => {
-  if (e.target.value) loadDataForDate(e.target.value);
-});
+historyBtn.addEventListener('click', openCalendar);
+closeCalendarBtn.addEventListener('click', closeCalendar);
+prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+nextMonthBtn.addEventListener('click', () => changeMonth(1));
 
-uploadSection.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) handleFile(file);
 });
 
 async function handleFile(file) {
-  const isXLSX = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
-  
-  if (isXLSX) {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      await processRows(rows);
-    };
-    reader.readAsArrayBuffer(file);
-  } else {
-    Papa.parse(file, {
-      header: false,
-      skipEmptyLines: true,
-      complete: async (results) => {
-        await processRows(results.data);
-      }
-    });
+  try {
+    const isXLSX = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+    
+    if (isXLSX) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          if (typeof XLSX === 'undefined') throw new Error('La librería Excel (XLSX) no se cargó correctamente.');
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          await processRows(rows);
+        } catch (err) {
+          console.error('Error leyendo Excel:', err);
+          alert(`Error al leer el archivo Excel: ${err.message}`);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      if (typeof Papa === 'undefined') throw new Error('La librería CSV (PapaParse) no se cargó correctamente.');
+      Papa.parse(file, {
+        header: false,
+        skipEmptyLines: true,
+        complete: async (results) => {
+          try {
+            await processRows(results.data);
+          } catch (err) {
+            alert(`Error procesando CSV: ${err.message}`);
+          }
+        },
+        error: (err) => {
+          alert(`Error al analizar CSV: ${err.message}`);
+        }
+      });
+    }
+  } catch (err) {
+    console.error('Error en handleFile:', err);
+    alert(`Error al procesar el archivo: ${err.message}`);
   }
 }
 
 async function processRows(rows) {
   try {
     const date = importDateInput.value || new Date().toISOString().split('T')[0];
+    console.log(`[DEBUG] Iniciando procesamiento de ${rows.length} filas para la fecha ${date}`);
 
-    console.log('Procesando filas:', rows.length);
+    // Skip empty rows at the start
+    let startIdx = 0;
+    while (startIdx < rows.length && (!rows[startIdx] || rows[startIdx].length < 2)) {
+      startIdx++;
+    }
+    
+    // Assume header is at startIdx, data starts at startIdx + 1
+    const dataRows = rows.slice(startIdx + 1);
+    console.log(`[DEBUG] Filas de datos tras saltar encabezado: ${dataRows.length}`);
 
-    // Skip header and find data
-    const newItems = rows.slice(1).map((row, idx) => {
+    const newItems = dataRows.map((row, idx) => {
       try {
+        if (!row || row.length < 2) return null;
+        
         const code = row[0]?.toString().trim() || 'S/C';
         const description = row[1]?.toString().trim() || 'Sin nombre';
         
@@ -281,7 +374,8 @@ async function processRows(rows) {
           } else if (s.includes(',') && !s.includes('.')) {
             s = s.replace(',', '.');
           }
-          return parseFloat(s) || 0;
+          let n = parseFloat(s);
+          return isNaN(n) ? 0 : n;
         };
 
         const stock = cleanNum(row[4]);
@@ -289,33 +383,36 @@ async function processRows(rows) {
         
         return { code, description, stock, cost };
       } catch (e) {
-        console.warn(`Error en fila ${idx + 1}:`, e);
         return null;
       }
     }).filter(p => p && p.stock > 0 && p.description !== 'Sin nombre');
 
+    console.log(`[DEBUG] Items válidos filtrados: ${newItems.length}`);
+
     if (newItems.length === 0) {
-      alert('No se encontraron productos válidos con stock mayor a 0 en el archivo.');
+      alert('No se encontraron productos válidos (con stock > 0) en el archivo seleccionado.');
       return;
     }
 
-    console.log('Items válidos encontrados:', newItems.length);
-
+    // Indicate progress
+    console.log('[DEBUG] Enviando datos al servidor...');
+    
     // Save to backend
-    await apiFetch('/inventory', {
+    const res = await apiFetch('/inventory', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date, items: newItems })
     });
+    
+    console.log('[DEBUG] Respuesta del servidor recibida:', res);
 
     await loadDates();
-    dateSelector.value = date;
     await loadDataForDate(date);
     
-    alert(`¡Datos cargados con éxito! Se procesaron ${newItems.length} productos.`);
+    alert(`¡Carga completada! Se guardaron ${newItems.length} productos correctamente.`);
   } catch (err) {
-    console.error('Error procesando el archivo:', err);
-    alert(`Error: ${err.message}\n\nRevisa que el servidor backend esté corriendo (reiniciar.bat).`);
+    console.error('[ERROR] Fallo en processRows:', err);
+    alert(`Error crítico al procesar: ${err.message}`);
   }
 }
 
